@@ -1,4 +1,4 @@
-package org.compactdict;
+package org.compactdict.util;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -6,22 +6,22 @@ import java.util.Arrays;
 import java.util.Base64;
 import org.apache.commons.codec.digest.MurmurHash3;
 
-public class BytesRef implements Comparable<BytesRef>, Serializable {
+public class BytesWrapper implements Comparable<BytesWrapper>, Serializable {
     /** An empty byte array for convenience */
     public static final byte[] EMPTY_BYTES = new byte[0];
 
     /** The contents of the BytesRef. Should never be {@code null}. */
     private byte[] bytes;
 
-    public BytesRef() {
+    public BytesWrapper() {
         this(EMPTY_BYTES);
     }
 
-    public BytesRef(String s) {
+    public BytesWrapper(String s) {
         this(s.getBytes(StandardCharsets.UTF_8));
     }
 
-    public BytesRef(byte[] bytes) {
+    public BytesWrapper(byte[] bytes) {
         this.bytes = bytes;
     }
 
@@ -30,7 +30,7 @@ public class BytesRef implements Comparable<BytesRef>, Serializable {
      *
      * @param other Another BytesRef, should not be null.
      */
-    public boolean bytesEquals(BytesRef other) {
+    public boolean bytesEquals(BytesWrapper other) {
         return Arrays.equals(this.bytes, 0, bytes.length, other.bytes, 0, other.getLength());
     }
 
@@ -54,8 +54,8 @@ public class BytesRef implements Comparable<BytesRef>, Serializable {
      * @see #deepCopyOf
      */
     @Override
-    public BytesRef clone() {
-        return new BytesRef(bytes);
+    public BytesWrapper clone() {
+        return new BytesWrapper(bytes);
     }
 
     /**
@@ -74,8 +74,8 @@ public class BytesRef implements Comparable<BytesRef>, Serializable {
         if (other == null) {
             return false;
         }
-        if (other instanceof BytesRef) {
-            return this.bytesEquals((BytesRef) other);
+        if (other instanceof BytesWrapper) {
+            return this.bytesEquals((BytesWrapper) other);
         }
         return false;
     }
@@ -88,7 +88,7 @@ public class BytesRef implements Comparable<BytesRef>, Serializable {
 
     /** Unsigned byte order comparison */
     @Override
-    public int compareTo(BytesRef other) {
+    public int compareTo(BytesWrapper other) {
         return Arrays.compareUnsigned(
                 this.bytes, 0, bytes.length, other.bytes, 0, other.getLength());
     }
@@ -98,9 +98,9 @@ public class BytesRef implements Comparable<BytesRef>, Serializable {
      *
      * <p>The returned BytesRef will have a length of other.length and an offset of zero.
      */
-    public BytesRef deepCopy() {
+    public BytesWrapper deepCopy() {
         final byte[] copy = new byte[bytes.length];
         System.arraycopy(bytes, 0, copy, 0, bytes.length);
-        return new BytesRef(copy);
+        return new BytesWrapper(copy);
     }
 }

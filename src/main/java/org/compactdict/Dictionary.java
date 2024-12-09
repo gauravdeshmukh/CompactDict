@@ -1,5 +1,7 @@
 package org.compactdict;
 
+import org.compactdict.util.BytesWrapper;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -16,7 +18,7 @@ public interface Dictionary {
      * @param key   The BytesRef object representing the key to be stored
      * @param value The BytesRef object representing the value to be associated with the key
      */
-    void put(BytesRef key, BytesRef value);
+    void put(BytesWrapper key, BytesWrapper value);
 
     /**
      * Stores a key-value pair in the dictionary.
@@ -27,7 +29,7 @@ public interface Dictionary {
      * @param isPrefixKey A boolean indicating whether the key is a prefix key or not.
      *                    By default, it falls back to assumption that key is not prefix key.
      */
-    default void put(BytesRef key, BytesRef value, boolean isPrefixKey) {
+    default void put(BytesWrapper key, BytesWrapper value, boolean isPrefixKey) {
         put(key, value);
     }
 
@@ -37,7 +39,7 @@ public interface Dictionary {
      * @param key The BytesRef object representing the key to look up
      * @return The BytesRef value associated with the key, or null if the key is not found
      */
-    BytesRef get(BytesRef key);
+    BytesWrapper get(BytesWrapper key);
 
     /**
      * Returns a collection of all key-value pairs stored in the dictionary.
@@ -45,5 +47,5 @@ public interface Dictionary {
      * @return A Collection of Map.Entry objects containing all the key-value pairs
      *         where both keys and values are BytesRef objects
      */
-    Collection<Map.Entry<BytesRef, BytesRef>> getEntries();
+    Collection<Map.Entry<BytesWrapper, BytesWrapper>> getEntries();
 }

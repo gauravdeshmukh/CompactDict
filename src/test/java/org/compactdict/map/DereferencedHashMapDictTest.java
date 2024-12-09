@@ -1,6 +1,6 @@
 package org.compactdict.map;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -23,18 +23,18 @@ public class DereferencedHashMapDictTest {
         // Verify that the dictionary is empty
         assertTrue(dict.getEntries().isEmpty());
         // Verify that we can add and retrieve entries
-        BytesRef key = new BytesRef("key");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value = new BytesWrapper("value");
 
         dict.put(key, value);
-        BytesRef retrievedValue = dict.get(key);
+        BytesWrapper retrievedValue = dict.get(key);
 
         assertNotNull(retrievedValue);
         assertEquals(value, retrievedValue);
         // Verify that the dictionary now contains one entry
         assertEquals(1, dict.getEntries().size());
         // Verify that the entry in the dictionary matches what we put in
-        for (Map.Entry<BytesRef, BytesRef> entry : dict.getEntries()) {
+        for (Map.Entry<BytesWrapper, BytesWrapper> entry : dict.getEntries()) {
             assertEquals(key, entry.getKey());
             assertEquals(value, entry.getValue());
         }
@@ -59,9 +59,9 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testGetExistingAndNonExistingKeys() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key1 = new BytesRef("key1");
-        BytesRef value1 = new BytesRef("value1");
-        BytesRef key2 = new BytesRef("key2");
+        BytesWrapper key1 = new BytesWrapper("key1");
+        BytesWrapper value1 = new BytesWrapper("value1");
+        BytesWrapper key2 = new BytesWrapper("key2");
 
         dict.put(key1, value1);
 
@@ -78,7 +78,7 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testGetWithEmptyKey() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef emptyKey = new BytesRef(new byte[0]);
+        BytesWrapper emptyKey = new BytesWrapper(new byte[0]);
 
         assertNull(dict.get(emptyKey), "Getting an empty key should return null");
     }
@@ -86,7 +86,7 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testGetWithNonExistentKey() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef nonExistentKey = new BytesRef("non-existent".getBytes());
+        BytesWrapper nonExistentKey = new BytesWrapper("non-existent".getBytes());
 
         assertNull(dict.get(nonExistentKey), "Getting a non-existent key should return null");
     }
@@ -94,8 +94,8 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testGetAfterRemoval() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key = new BytesRef("key".getBytes());
-        BytesRef value = new BytesRef("value".getBytes());
+        BytesWrapper key = new BytesWrapper("key".getBytes());
+        BytesWrapper value = new BytesWrapper("value".getBytes());
         dict.put(key, value);
         // Simulating removal
         dict.put(key, null);
@@ -106,21 +106,21 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testGetEntriesReturnsNonEmptyCollection() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key1 = new BytesRef("key1");
-        BytesRef value1 = new BytesRef("value1");
-        BytesRef key2 = new BytesRef("key2");
-        BytesRef value2 = new BytesRef("value2");
+        BytesWrapper key1 = new BytesWrapper("key1");
+        BytesWrapper value1 = new BytesWrapper("value1");
+        BytesWrapper key2 = new BytesWrapper("key2");
+        BytesWrapper value2 = new BytesWrapper("value2");
         dict.put(key1, value1);
         dict.put(key2, value2);
 
-        Collection<Map.Entry<BytesRef, BytesRef>> entries = dict.getEntries();
+        Collection<Map.Entry<BytesWrapper, BytesWrapper>> entries = dict.getEntries();
 
         assertNotNull(entries);
         assertFalse(entries.isEmpty());
         assertEquals(2, entries.size());
         boolean foundEntry1 = false;
         boolean foundEntry2 = false;
-        for (Map.Entry<BytesRef, BytesRef> entry : entries) {
+        for (Map.Entry<BytesWrapper, BytesWrapper> entry : entries) {
             if (entry.getKey().equals(key1) && entry.getValue().equals(value1)) {
                 foundEntry1 = true;
             } else if (entry.getKey().equals(key2) && entry.getValue().equals(value2)) {
@@ -134,7 +134,7 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testGetEntriesEmptyDictionary() {
         DereferencedHashMapDict emptyDict = new DereferencedHashMapDict();
-        Collection<Map.Entry<BytesRef, BytesRef>> entries = emptyDict.getEntries();
+        Collection<Map.Entry<BytesWrapper, BytesWrapper>> entries = emptyDict.getEntries();
 
         assertNotNull(entries, "Entries collection should not be null");
         assertTrue(entries.isEmpty(), "Entries collection should be empty");
@@ -143,26 +143,26 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testGetEntriesReflectsChanges() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key = new BytesRef("key");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value = new BytesWrapper("value");
 
         dict.put(key, value);
-        Collection<Map.Entry<BytesRef, BytesRef>> entries = dict.getEntries();
+        Collection<Map.Entry<BytesWrapper, BytesWrapper>> entries = dict.getEntries();
 
         assertEquals(1, entries.size(), "Entries should contain one element");
 
-        dict.put(new BytesRef("key2"), new BytesRef("value2"));
+        dict.put(new BytesWrapper("key2"), new BytesWrapper("value2"));
         assertEquals(2, entries.size(), "Entries should reflect the new addition");
     }
 
     @Test
     public void testPutAddsKeyValuePair() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key = new BytesRef("testKey");
-        BytesRef value = new BytesRef("testValue");
+        BytesWrapper key = new BytesWrapper("testKey");
+        BytesWrapper value = new BytesWrapper("testValue");
 
         dict.put(key, value);
-        BytesRef retrievedValue = dict.get(key);
+        BytesWrapper retrievedValue = dict.get(key);
 
         assertNotNull(retrievedValue, "Retrieved value should not be null");
         assertEquals(value, retrievedValue, "Retrieved value should match the inserted value");
@@ -171,14 +171,14 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testPutNullKey() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef value = new BytesRef("value");
+        BytesWrapper value = new BytesWrapper("value");
         assertThrows(AssertionError.class, () -> dict.put(null, value));
     }
 
     @Test
     public void testPutNullValue() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key = new BytesRef("key");
+        BytesWrapper key = new BytesWrapper("key");
 
         dict.put(key, null);
 
@@ -188,8 +188,8 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testPutEmptyValue() {
        DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key = new BytesRef("key");
-        BytesRef emptyValue = new BytesRef("");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper emptyValue = new BytesWrapper("");
 
         dict.put(key, emptyValue);
 
@@ -199,9 +199,9 @@ public class DereferencedHashMapDictTest {
     @Test
     public void testPutDuplicateKey() {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
-        BytesRef key = new BytesRef("key");
-        BytesRef value1 = new BytesRef("value1");
-        BytesRef value2 = new BytesRef("value2");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value1 = new BytesWrapper("value1");
+        BytesWrapper value2 = new BytesWrapper("value2");
 
         dict.put(key, value1);
         dict.put(key, value2);
@@ -214,8 +214,8 @@ public class DereferencedHashMapDictTest {
         DereferencedHashMapDict dict = new DereferencedHashMapDict();
         // 1MB array
         byte[] largeArray = new byte[1024 * 1024];
-        BytesRef largeKey = new BytesRef(largeArray);
-        BytesRef largeValue = new BytesRef(largeArray);
+        BytesWrapper largeKey = new BytesWrapper(largeArray);
+        BytesWrapper largeValue = new BytesWrapper(largeArray);
 
         dict.put(largeKey, largeValue);
 

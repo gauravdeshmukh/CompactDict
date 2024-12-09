@@ -1,6 +1,6 @@
 package org.compactdict.map;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.compactdict.Dictionary;
 
 import java.io.Serializable;
@@ -20,7 +20,7 @@ import java.util.Map;
  * Note: This is not thread-safe.
  */
 public class HashMapDict implements Dictionary, Serializable {
-    private final Map<BytesRef, BytesRef> map;
+    private final Map<BytesWrapper, BytesWrapper> map;
 
     /**
      * Constructs an empty HashMapDict with default initial capacity.
@@ -51,7 +51,7 @@ public class HashMapDict implements Dictionary, Serializable {
      * @param value the BytesRef value to be associated with the key
      */
     @Override
-    public void put(BytesRef key, BytesRef value) {
+    public void put(BytesWrapper key, BytesWrapper value) {
         assert key != null;
         map.put(key, value);
     }
@@ -64,7 +64,7 @@ public class HashMapDict implements Dictionary, Serializable {
      *         or null if no mapping exists for the key
      */
     @Override
-    public BytesRef get(BytesRef key) {
+    public BytesWrapper get(BytesWrapper key) {
         assert key != null;
         return map.get(key);
     }
@@ -77,7 +77,7 @@ public class HashMapDict implements Dictionary, Serializable {
      *         dictionary are reflected in the collection
      */
     @Override
-    public Collection<Map.Entry<BytesRef, BytesRef>> getEntries() {
+    public Collection<Map.Entry<BytesWrapper, BytesWrapper>> getEntries() {
         return map.entrySet();
     }
 }

@@ -1,6 +1,6 @@
 package org.compactdict.trie;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,10 +20,10 @@ public class BasicTrieDictTest {
     public void testNewBasicTrieDictIsEmpty() {
         BasicTrieDict dict = new BasicTrieDict();
         // Verify that the dictionary is empty
-        BytesRef key = new BytesRef("test");
+        BytesWrapper key = new BytesWrapper("test");
         assertNull(dict.get(key), "Newly constructed BasicTrieDict should not contain any key-value pairs");
         // Verify that we can add and retrieve a key-value pair
-        BytesRef value = new BytesRef("value");
+        BytesWrapper value = new BytesWrapper("value");
         dict.put(key, value);
         assertEquals(value, dict.get(key), "After adding a key-value pair, it should be retrievable");
     }
@@ -34,7 +34,7 @@ public class BasicTrieDictTest {
     @Test
     public void testBasicTrieDictInitiallyEmpty() {
         BasicTrieDict dict = new BasicTrieDict();
-        assertNull(dict.get(new BytesRef("anyKey")), "Newly constructed BasicTrieDict should not contain any keys");
+        assertNull(dict.get(new BytesWrapper("anyKey")), "Newly constructed BasicTrieDict should not contain any keys");
     }
 
     /**
@@ -52,10 +52,10 @@ public class BasicTrieDictTest {
     @Test
     public void testBasicTrieDictAllowsPutAndGet() {
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef key = new BytesRef("testKey");
-        BytesRef value = new BytesRef("testValue");
+        BytesWrapper key = new BytesWrapper("testKey");
+        BytesWrapper value = new BytesWrapper("testValue");
         dict.put(key, value);
-        BytesRef retrievedValue = dict.get(key);
+        BytesWrapper retrievedValue = dict.get(key);
         assertNotNull(retrievedValue, "Retrieved value should not be null after putting a key-value pair");
         assertEquals(value, retrievedValue, "Retrieved value should match the put value");
     }
@@ -67,9 +67,9 @@ public class BasicTrieDictTest {
     @Test
     public void testGetExistingAndNonExistingKeys() {
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef key1 = new BytesRef("key1");
-        BytesRef value1 = new BytesRef("value1");
-        BytesRef key2 = new BytesRef("key2");
+        BytesWrapper key1 = new BytesWrapper("key1");
+        BytesWrapper value1 = new BytesWrapper("value1");
+        BytesWrapper key2 = new BytesWrapper("key2");
         dict.put(key1, value1);
         assertEquals(value1, dict.get(key1), "Should return the correct value for an existing key");
         assertNull(dict.get(key2), "Should return null for a non-existing key");
@@ -90,7 +90,7 @@ public class BasicTrieDictTest {
     @Test
     public void testGetWithEmptyKey() {
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef emptyKey = new BytesRef(new byte[0]);
+        BytesWrapper emptyKey = new BytesWrapper(new byte[0]);
         assertNull(dict.get(emptyKey), "Getting an empty key should return null");
     }
 
@@ -100,7 +100,7 @@ public class BasicTrieDictTest {
     @Test
     public void testGetWithNonExistentKey() {
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef nonExistentKey = new BytesRef("non-existent".getBytes());
+        BytesWrapper nonExistentKey = new BytesWrapper("non-existent".getBytes());
         assertNull(dict.get(nonExistentKey), "Getting a non-existent key should return null");
     }
 
@@ -111,10 +111,10 @@ public class BasicTrieDictTest {
     @Test
     public void testPutAddsKeyValuePair() {
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef key = new BytesRef("testKey");
-        BytesRef value = new BytesRef("testValue");
+        BytesWrapper key = new BytesWrapper("testKey");
+        BytesWrapper value = new BytesWrapper("testValue");
         dict.put(key, value);
-        BytesRef retrievedValue = dict.get(key);
+        BytesWrapper retrievedValue = dict.get(key);
         assertNotNull(retrievedValue, "Retrieved value should not be null");
         assertEquals(value, retrievedValue, "Retrieved value should match the inserted value");
     }
@@ -126,7 +126,7 @@ public class BasicTrieDictTest {
          * This tests the scenario where the input is invalid (null key).
          */
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef value = new BytesRef("value");
+        BytesWrapper value = new BytesWrapper("value");
         assertThrows(AssertionError.class, () -> dict.put(null, value));
     }
 
@@ -137,7 +137,7 @@ public class BasicTrieDictTest {
          * This tests the scenario where the input is invalid (null value).
          */
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef key = new BytesRef("key");
+        BytesWrapper key = new BytesWrapper("key");
         assertThrows(AssertionError.class, () -> dict.put(key, null));
     }
 
@@ -148,8 +148,8 @@ public class BasicTrieDictTest {
          * This tests the scenario where the input is empty.
          */
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef key = new BytesRef("key");
-        BytesRef emptyValue = new BytesRef("");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper emptyValue = new BytesWrapper("");
         dict.put(key, emptyValue);
         assertEquals(emptyValue, dict.get(key));
     }
@@ -161,9 +161,9 @@ public class BasicTrieDictTest {
          * This tests the scenario where we're overwriting an existing key.
          */
         BasicTrieDict dict = new BasicTrieDict();
-        BytesRef key = new BytesRef("key");
-        BytesRef value1 = new BytesRef("value1");
-        BytesRef value2 = new BytesRef("value2");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value1 = new BytesWrapper("value1");
+        BytesWrapper value2 = new BytesWrapper("value2");
         dict.put(key, value1);
         dict.put(key, value2);
         assertEquals(value2, dict.get(key));
@@ -178,8 +178,8 @@ public class BasicTrieDictTest {
         BasicTrieDict dict = new BasicTrieDict();
         // 1MB array
         byte[] largeArray = new byte[1024 * 1024];
-        BytesRef largeKey = new BytesRef(largeArray);
-        BytesRef largeValue = new BytesRef(largeArray);
+        BytesWrapper largeKey = new BytesWrapper(largeArray);
+        BytesWrapper largeValue = new BytesWrapper(largeArray);
         dict.put(largeKey, largeValue);
         assertEquals(largeValue, dict.get(largeKey));
     }
@@ -187,18 +187,18 @@ public class BasicTrieDictTest {
     @Test
     public void testPrefixMatching() {
         BasicTrieDict dict = new BasicTrieDict();
-        dict.put(new BytesRef("key"), new BytesRef("value"), true);
-        dict.put(new BytesRef("key1"), new BytesRef("value1"), true);
-        dict.put(new BytesRef("key12"), new BytesRef("value12"), false);
-        dict.put(new BytesRef("key123"), new BytesRef("value123"), false);
+        dict.put(new BytesWrapper("key"), new BytesWrapper("value"), true);
+        dict.put(new BytesWrapper("key1"), new BytesWrapper("value1"), true);
+        dict.put(new BytesWrapper("key12"), new BytesWrapper("value12"), false);
+        dict.put(new BytesWrapper("key123"), new BytesWrapper("value123"), false);
 
-        assertEquals(new BytesRef("value"), dict.get(new BytesRef("key")));
-        assertEquals(new BytesRef("value1"), dict.get(new BytesRef("key1")));
-        assertEquals(new BytesRef("value12"), dict.get(new BytesRef("key12")));
-        assertEquals(new BytesRef("value123"), dict.get(new BytesRef("key123")));
-        assertEquals(new BytesRef("value1"), dict.get(new BytesRef("key111")));
-        assertEquals(new BytesRef("value1"), dict.get(new BytesRef("key121")));
-        assertEquals(new BytesRef("value"), dict.get(new BytesRef("key21")));
-        assertNull(dict.get(new BytesRef("ke1y")));
+        assertEquals(new BytesWrapper("value"), dict.get(new BytesWrapper("key")));
+        assertEquals(new BytesWrapper("value1"), dict.get(new BytesWrapper("key1")));
+        assertEquals(new BytesWrapper("value12"), dict.get(new BytesWrapper("key12")));
+        assertEquals(new BytesWrapper("value123"), dict.get(new BytesWrapper("key123")));
+        assertEquals(new BytesWrapper("value1"), dict.get(new BytesWrapper("key111")));
+        assertEquals(new BytesWrapper("value1"), dict.get(new BytesWrapper("key121")));
+        assertEquals(new BytesWrapper("value"), dict.get(new BytesWrapper("key21")));
+        assertNull(dict.get(new BytesWrapper("ke1y")));
     }
 }

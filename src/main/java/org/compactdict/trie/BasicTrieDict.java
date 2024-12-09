@@ -1,6 +1,6 @@
 package org.compactdict.trie;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.compactdict.Dictionary;
 
 import java.io.Serializable;
@@ -41,7 +41,7 @@ public class BasicTrieDict implements Dictionary, Serializable {
      * @param isPrefixKey A boolean indicating whether the key is a prefix key or not.
      */
     @Override
-    public void put(BytesRef key, BytesRef value, boolean isPrefixKey) {
+    public void put(BytesWrapper key, BytesWrapper value, boolean isPrefixKey) {
         assert key != null && value != null;
         root.put(key, value, 0, isPrefixKey);
     }
@@ -57,7 +57,7 @@ public class BasicTrieDict implements Dictionary, Serializable {
      * @param value the BytesRef value to be associated with the key
      */
     @Override
-    public void put(BytesRef key, BytesRef value) {
+    public void put(BytesWrapper key, BytesWrapper value) {
         assert key != null && value != null;
         root.put(key, value, 0, false);
     }
@@ -76,7 +76,7 @@ public class BasicTrieDict implements Dictionary, Serializable {
      *         or null if no mapping exists for the key
      */
     @Override
-    public BytesRef get(BytesRef key) {
+    public BytesWrapper get(BytesWrapper key) {
         assert key != null;
         return root.get(key, 0);
     }
@@ -90,7 +90,7 @@ public class BasicTrieDict implements Dictionary, Serializable {
      * @return null as this implementation does not support entry iteration
      */
     @Override
-    public Collection<Map.Entry<BytesRef, BytesRef>> getEntries() {
+    public Collection<Map.Entry<BytesWrapper, BytesWrapper>> getEntries() {
         return null;
     }
 }

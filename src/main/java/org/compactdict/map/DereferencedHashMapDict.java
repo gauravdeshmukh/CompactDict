@@ -1,6 +1,6 @@
 package org.compactdict.map;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.compactdict.Dictionary;
 
 import java.io.Serializable;
@@ -27,8 +27,8 @@ import java.util.Map;
  * Note: This is not thread-safe.
  */
 public class DereferencedHashMapDict implements Dictionary, Serializable {
-    private final Map<BytesRef, BytesRef> map;
-    private final Map<BytesRef, BytesRef> valueTable;
+    private final Map<BytesWrapper, BytesWrapper> map;
+    private final Map<BytesWrapper, BytesWrapper> valueTable;
 
     /**
      * Constructs an empty DereferencedHashMapDict with default initial capacity
@@ -65,9 +65,9 @@ public class DereferencedHashMapDict implements Dictionary, Serializable {
      * @param value the BytesRef value to be associated with the key
      */
     @Override
-    public void put(BytesRef key, BytesRef value) {
+    public void put(BytesWrapper key, BytesWrapper value) {
         assert key != null;
-        BytesRef dereferencedValue = valueTable.computeIfAbsent(value, v -> v);
+        BytesWrapper dereferencedValue = valueTable.computeIfAbsent(value, v -> v);
         map.put(key, dereferencedValue);
     }
 
@@ -79,7 +79,7 @@ public class DereferencedHashMapDict implements Dictionary, Serializable {
      *         or null if no mapping exists for the key
      */
     @Override
-    public BytesRef get(BytesRef key) {
+    public BytesWrapper get(BytesWrapper key) {
         assert key != null;
         return map.get(key);
     }
@@ -93,7 +93,7 @@ public class DereferencedHashMapDict implements Dictionary, Serializable {
      *         in the returned entries are dereferenced values from the value table
      */
     @Override
-    public Collection<Map.Entry<BytesRef, BytesRef>> getEntries() {
+    public Collection<Map.Entry<BytesWrapper, BytesWrapper>> getEntries() {
         return map.entrySet();
     }
 }

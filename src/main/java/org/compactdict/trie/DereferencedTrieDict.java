@@ -1,6 +1,6 @@
 package org.compactdict.trie;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.compactdict.Dictionary;
 
 import java.io.Serializable;
@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class DereferencedTrieDict implements Dictionary, Serializable {
     private final Node root;
-    private final Map<BytesRef, BytesRef> valueTable;
+    private final Map<BytesWrapper, BytesWrapper> valueTable;
 
     /**
      * Constructs an empty DereferencedTrieDict with a new root node and
@@ -53,7 +53,7 @@ public class DereferencedTrieDict implements Dictionary, Serializable {
      * @param value the BytesRef value to be associated with the key
      */
     @Override
-    public void put(BytesRef key, BytesRef value) {
+    public void put(BytesWrapper key, BytesWrapper value) {
         put(key, value, false);
     }
 
@@ -70,9 +70,9 @@ public class DereferencedTrieDict implements Dictionary, Serializable {
      * @param isPrefixKey A boolean indicating whether the key is a prefix key or not.
      */
     @Override
-    public void put(BytesRef key, BytesRef value, boolean isPrefixKey) {
+    public void put(BytesWrapper key, BytesWrapper value, boolean isPrefixKey) {
         assert key != null && value != null;
-        BytesRef dereferencedValue = valueTable.computeIfAbsent(value, v -> v);
+        BytesWrapper dereferencedValue = valueTable.computeIfAbsent(value, v -> v);
         root.put(key, dereferencedValue, 0, isPrefixKey);
     }
 
@@ -91,7 +91,7 @@ public class DereferencedTrieDict implements Dictionary, Serializable {
      *         or null if no mapping exists for the key
      */
     @Override
-    public BytesRef get(BytesRef key) {
+    public BytesWrapper get(BytesWrapper key) {
         return root.get(key, 0);
     }
 
@@ -104,7 +104,7 @@ public class DereferencedTrieDict implements Dictionary, Serializable {
      * @return null as this implementation does not support entry iteration
      */
     @Override
-    public Collection<Map.Entry<BytesRef, BytesRef>> getEntries() {
+    public Collection<Map.Entry<BytesWrapper, BytesWrapper>> getEntries() {
         return null;
     }
 }

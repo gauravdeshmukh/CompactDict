@@ -1,6 +1,6 @@
 package org.compactdict.trie;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.lang.reflect.Field;
@@ -44,13 +44,13 @@ public class NodeTest {
     @Test
     public void testPutWithNullKey() {
         Node node = new Node();
-        assertThrows(NullPointerException.class, () -> node.put(null, new BytesRef("value"), 0, false));
+        assertThrows(NullPointerException.class, () -> node.put(null, new BytesWrapper("value"), 0, false));
     }
 
     @Test
     public void testPutWithNullValue() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
+        BytesWrapper key = new BytesWrapper("key");
         node.put(key, null, 0, false);
         assertNull(node.get(key, 0), "Putting null value should result in null when retrieved");
     }
@@ -64,38 +64,38 @@ public class NodeTest {
     @Test
     public void testPutWithNegativeOffset() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value = new BytesWrapper("value");
         assertThrows(AssertionError.class, () -> node.put(key, value, -1, false));
     }
 
     @Test
     public void testPutWithOffsetLargerThanKeyLength() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value = new BytesWrapper("value");
         assertThrows(AssertionError.class, () -> node.put(key, value, key.getLength()+1, false));
     }
 
     @Test
     public void testGetWithNegativeOffset() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
+        BytesWrapper key = new BytesWrapper("key");
         assertThrows(AssertionError.class, () -> node.get(key, -1));
     }
 
     @Test
     public void testGetWithOffsetLargerThanKeyLength() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
+        BytesWrapper key = new BytesWrapper("key");
         assertThrows(AssertionError.class, () -> node.get(key, key.getLength()+1));
     }
 
     @Test
     public void testPutWithOffsetEqualToKeyLength() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value = new BytesWrapper("value");
         node.put(key, value, key.getLength(), false);
         assertTrue(node.isValidEndOfKey(), "Node should be valid end of key when offset is equal to key length");
     }
@@ -103,8 +103,8 @@ public class NodeTest {
     @Test
     public void testGetWithOffsetEqualToKeyLength() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value = new BytesWrapper("value");
         node.put(key, value, 0, false);
         assertNull(node.get(key, key.getLength()), "Get should return null when offset equal key length");
     }
@@ -112,8 +112,8 @@ public class NodeTest {
     @Test
     public void testPutWithPrefixKey() {
         Node node = new Node();
-        BytesRef key = new BytesRef("key");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper value = new BytesWrapper("value");
         node.put(key, value, key.getLength(), true);
         assertTrue(node.isValidEndOfKey(), "Node should be valid end of key when offset is equal to key length");
         assertTrue(node.isPrefixEnd());
@@ -123,17 +123,17 @@ public class NodeTest {
     @Test
     public void testGetWithMultiplePrefixKey() {
         Node node = new Node();
-        node.put(new BytesRef("key"), new BytesRef("value"), 0, true);
-        node.put(new BytesRef("key1"), new BytesRef("value1"), 0, true);
-        node.put(new BytesRef("key12"), new BytesRef("value12"), 0, false);
-        node.put(new BytesRef("key123"), new BytesRef("value123"), 0, false);
+        node.put(new BytesWrapper("key"), new BytesWrapper("value"), 0, true);
+        node.put(new BytesWrapper("key1"), new BytesWrapper("value1"), 0, true);
+        node.put(new BytesWrapper("key12"), new BytesWrapper("value12"), 0, false);
+        node.put(new BytesWrapper("key123"), new BytesWrapper("value123"), 0, false);
 
-        assertEquals(new BytesRef("value"), node.get(new BytesRef("key"), 0));
-        assertEquals(new BytesRef("value1"), node.get(new BytesRef("key1"), 0));
-        assertEquals(new BytesRef("value12"), node.get(new BytesRef("key12"), 0));
-        assertEquals(new BytesRef("value123"), node.get(new BytesRef("key123"), 0));
-        assertEquals(new BytesRef("value1"), node.get(new BytesRef("key111"), 0));
-        assertEquals(new BytesRef("value1"), node.get(new BytesRef("key121"), 0));
-        assertEquals(new BytesRef("value"), node.get(new BytesRef("key21"), 0));
+        assertEquals(new BytesWrapper("value"), node.get(new BytesWrapper("key"), 0));
+        assertEquals(new BytesWrapper("value1"), node.get(new BytesWrapper("key1"), 0));
+        assertEquals(new BytesWrapper("value12"), node.get(new BytesWrapper("key12"), 0));
+        assertEquals(new BytesWrapper("value123"), node.get(new BytesWrapper("key123"), 0));
+        assertEquals(new BytesWrapper("value1"), node.get(new BytesWrapper("key111"), 0));
+        assertEquals(new BytesWrapper("value1"), node.get(new BytesWrapper("key121"), 0));
+        assertEquals(new BytesWrapper("value"), node.get(new BytesWrapper("key21"), 0));
     }
 }

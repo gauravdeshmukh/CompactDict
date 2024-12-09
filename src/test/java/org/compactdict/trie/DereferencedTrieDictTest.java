@@ -1,6 +1,6 @@
 package org.compactdict.trie;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ public class DereferencedTrieDictTest {
     public void testNewDereferencedTrieDictIsEmpty() {
         DereferencedTrieDict dict = new DereferencedTrieDict();
         // Verify that the dictionary is empty by checking that a get operation returns null
-        BytesRef key = new BytesRef("test");
+        BytesWrapper key = new BytesWrapper("test");
         assertNull(dict.get(key), "Newly created DereferencedTrieDict should not contain any entries");
         // Verify that the getEntries method returns null as per the current implementation
         assertNull(dict.getEntries(), "getEntries should return null for a new DereferencedTrieDict");
@@ -38,7 +38,7 @@ public class DereferencedTrieDictTest {
     public void testDereferencedTrieDictConstructor() {
         DereferencedTrieDict dict = new DereferencedTrieDict();
         // Verify that the dictionary is empty
-        assertNull(dict.get(new BytesRef("anyKey")));
+        assertNull(dict.get(new BytesWrapper("anyKey")));
         assertNull(dict.getEntries());
     }
 
@@ -56,10 +56,10 @@ public class DereferencedTrieDictTest {
     @Test
     public void testGetExistingKey() {
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        BytesRef key = new BytesRef("hello");
-        BytesRef value = new BytesRef("world");
+        BytesWrapper key = new BytesWrapper("hello");
+        BytesWrapper value = new BytesWrapper("world");
         dict.put(key, value);
-        BytesRef result = dict.get(key);
+        BytesWrapper result = dict.get(key);
         assertNotNull(result);
         assertEquals(value, result);
     }
@@ -71,7 +71,7 @@ public class DereferencedTrieDictTest {
          * This tests the scenario where the input is empty.
          */
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        BytesRef emptyKey = new BytesRef(new byte[0]);
+        BytesWrapper emptyKey = new BytesWrapper(new byte[0]);
         assertNull(dict.get(emptyKey), "Get with empty key should return null");
     }
 
@@ -92,7 +92,7 @@ public class DereferencedTrieDictTest {
          * This tests an edge case for the get method.
          */
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        BytesRef nonExistentKey = new BytesRef(new byte[] { 1, 2, 3 });
+        BytesWrapper nonExistentKey = new BytesWrapper(new byte[] { 1, 2, 3 });
         assertNull(dict.get(nonExistentKey), "Get with non-existent key should return null");
     }
 
@@ -105,7 +105,7 @@ public class DereferencedTrieDictTest {
         // 1 million bytes
         DereferencedTrieDict dict = new DereferencedTrieDict();
         byte[] largeKeyBytes = new byte[1000000];
-        BytesRef largeKey = new BytesRef(largeKeyBytes);
+        BytesWrapper largeKey = new BytesWrapper(largeKeyBytes);
         assertNull(dict.get(largeKey), "Get with large key should return null");
     }
 
@@ -137,7 +137,7 @@ public class DereferencedTrieDictTest {
     @Test
     public void testGetEntriesReturnsNullForNonEmptyDictionary() {
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        dict.put(new BytesRef("key"), new BytesRef("value"));
+        dict.put(new BytesWrapper("key"), new BytesWrapper("value"));
         assertNull(dict.getEntries(), "getEntries should return null even for a non-empty dictionary");
     }
 
@@ -148,7 +148,7 @@ public class DereferencedTrieDictTest {
     @Test
     public void testGetEntriesReturnsNullNotEmptyCollection() {
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        Collection<Map.Entry<BytesRef, BytesRef>> entries = dict.getEntries();
+        Collection<Map.Entry<BytesWrapper, BytesWrapper>> entries = dict.getEntries();
         assertNull(entries, "getEntries should return null, not an empty collection");
     }
 
@@ -158,10 +158,10 @@ public class DereferencedTrieDictTest {
     @Test
     public void testPutNewKeyValuePair() {
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        BytesRef key = new BytesRef("testKey");
-        BytesRef value = new BytesRef("testValue");
+        BytesWrapper key = new BytesWrapper("testKey");
+        BytesWrapper value = new BytesWrapper("testValue");
         dict.put(key, value);
-        BytesRef retrievedValue = dict.get(key);
+        BytesWrapper retrievedValue = dict.get(key);
         assertNotNull(retrievedValue, "Retrieved value should not be null");
         assertEquals(value, retrievedValue, "Retrieved value should match the inserted value");
     }
@@ -169,7 +169,7 @@ public class DereferencedTrieDictTest {
     @Test
     public void testPutWithNullKey() {
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        assertThrows(AssertionError.class, () -> dict.put(null, new BytesRef("value")));
+        assertThrows(AssertionError.class, () -> dict.put(null, new BytesWrapper("value")));
     }
 
     @Test
@@ -179,7 +179,7 @@ public class DereferencedTrieDictTest {
          * This should throw a NullPointerException.
          */
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        assertThrows(AssertionError.class, () -> dict.put(new BytesRef("key"), null));
+        assertThrows(AssertionError.class, () -> dict.put(new BytesWrapper("key"), null));
     }
 
     @Test
@@ -189,8 +189,8 @@ public class DereferencedTrieDictTest {
          * This should be allowed and not throw an exception.
          */
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        BytesRef emptyKey = new BytesRef("");
-        BytesRef value = new BytesRef("value");
+        BytesWrapper emptyKey = new BytesWrapper("");
+        BytesWrapper value = new BytesWrapper("value");
         assertDoesNotThrow(() -> dict.put(emptyKey, value));
         assertEquals(value, dict.get(emptyKey));
     }
@@ -202,8 +202,8 @@ public class DereferencedTrieDictTest {
          * This should be allowed and not throw an exception.
          */
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        BytesRef key = new BytesRef("key");
-        BytesRef emptyValue = new BytesRef("");
+        BytesWrapper key = new BytesWrapper("key");
+        BytesWrapper emptyValue = new BytesWrapper("");
         assertDoesNotThrow(() -> dict.put(key, emptyValue));
         assertEquals(emptyValue, dict.get(key));
     }
@@ -217,8 +217,8 @@ public class DereferencedTrieDictTest {
         // 100KB key
         DereferencedTrieDict dict = new DereferencedTrieDict();
         byte[] largeKeyBytes = new byte[10000];
-        BytesRef largeKey = new BytesRef(largeKeyBytes);
-        BytesRef value = new BytesRef("value");
+        BytesWrapper largeKey = new BytesWrapper(largeKeyBytes);
+        BytesWrapper value = new BytesWrapper("value");
         assertDoesNotThrow(() -> dict.put(largeKey, value));
         assertEquals(value, dict.get(largeKey));
     }
@@ -230,10 +230,10 @@ public class DereferencedTrieDictTest {
          * This should be allowed and not throw an exception.
          */
         DereferencedTrieDict dict = new DereferencedTrieDict();
-        BytesRef key = new BytesRef("key");
+        BytesWrapper key = new BytesWrapper("key");
         // 1MB value
         byte[] largeValueBytes = new byte[1000000];
-        BytesRef largeValue = new BytesRef(largeValueBytes);
+        BytesWrapper largeValue = new BytesWrapper(largeValueBytes);
         assertDoesNotThrow(() -> dict.put(key, largeValue));
         assertEquals(largeValue, dict.get(key));
     }
@@ -243,18 +243,18 @@ public class DereferencedTrieDictTest {
     @Test
     public void testPrefixMatching() {
         BasicTrieDict dict = new BasicTrieDict();
-        dict.put(new BytesRef("key"), new BytesRef("value"), true);
-        dict.put(new BytesRef("key1"), new BytesRef("value1"), true);
-        dict.put(new BytesRef("key12"), new BytesRef("value12"), false);
-        dict.put(new BytesRef("key123"), new BytesRef("value123"), false);
+        dict.put(new BytesWrapper("key"), new BytesWrapper("value"), true);
+        dict.put(new BytesWrapper("key1"), new BytesWrapper("value1"), true);
+        dict.put(new BytesWrapper("key12"), new BytesWrapper("value12"), false);
+        dict.put(new BytesWrapper("key123"), new BytesWrapper("value123"), false);
 
-        assertEquals(new BytesRef("value"), dict.get(new BytesRef("key")));
-        assertEquals(new BytesRef("value1"), dict.get(new BytesRef("key1")));
-        assertEquals(new BytesRef("value12"), dict.get(new BytesRef("key12")));
-        assertEquals(new BytesRef("value123"), dict.get(new BytesRef("key123")));
-        assertEquals(new BytesRef("value1"), dict.get(new BytesRef("key111")));
-        assertEquals(new BytesRef("value1"), dict.get(new BytesRef("key121")));
-        assertEquals(new BytesRef("value"), dict.get(new BytesRef("key21")));
-        assertNull(dict.get(new BytesRef("ke1y")));
+        assertEquals(new BytesWrapper("value"), dict.get(new BytesWrapper("key")));
+        assertEquals(new BytesWrapper("value1"), dict.get(new BytesWrapper("key1")));
+        assertEquals(new BytesWrapper("value12"), dict.get(new BytesWrapper("key12")));
+        assertEquals(new BytesWrapper("value123"), dict.get(new BytesWrapper("key123")));
+        assertEquals(new BytesWrapper("value1"), dict.get(new BytesWrapper("key111")));
+        assertEquals(new BytesWrapper("value1"), dict.get(new BytesWrapper("key121")));
+        assertEquals(new BytesWrapper("value"), dict.get(new BytesWrapper("key21")));
+        assertNull(dict.get(new BytesWrapper("ke1y")));
     }
 }

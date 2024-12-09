@@ -1,6 +1,6 @@
 package org.compactdict.trie;
 
-import org.compactdict.BytesRef;
+import org.compactdict.util.BytesWrapper;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.Map;
  * complete keys.</p>
  */
 class Node implements Serializable {
-    private BytesRef value;
+    private BytesWrapper value;
     private boolean isPrefixEnd;
     private final Map<Byte, Node> children;
 
@@ -33,7 +33,7 @@ class Node implements Serializable {
      *
      * @param value the BytesRef value to be stored in this node
      */
-    public Node(BytesRef value) {
+    public Node(BytesWrapper value) {
         this.value = value;
         this.children = new HashMap<>();
         this.isPrefixEnd = false;
@@ -48,7 +48,7 @@ class Node implements Serializable {
      * @param keyOffset the current position in the key being processed
      * @param isPrefixKey a flag indicating if the key is a prefix key
      */
-    public void put(BytesRef key, BytesRef value, int keyOffset, boolean isPrefixKey) {
+    public void put(BytesWrapper key, BytesWrapper value, int keyOffset, boolean isPrefixKey) {
         Node currentNode = this;
         while (keyOffset < key.getLength()) {
             byte keyByte = key.getByteAt(keyOffset);
@@ -67,9 +67,9 @@ class Node implements Serializable {
      * @return the BytesRef value associated with the key, or null if the
      *         key is not found in the trie
      */
-    public BytesRef get(BytesRef key, int keyOffset) {
+    public BytesWrapper get(BytesWrapper key, int keyOffset) {
         Node currentNode = this;
-        BytesRef prefixBasedValue = null;
+        BytesWrapper prefixBasedValue = null;
         while (keyOffset < key.getLength()) {
             if (currentNode.isPrefixEnd) {
                 prefixBasedValue = currentNode.value;
@@ -106,7 +106,7 @@ class Node implements Serializable {
         return this.children.isEmpty();
     }
 
-    BytesRef getValue() {
+    BytesWrapper getValue() {
         return value;
     }
 
