@@ -9,6 +9,7 @@ import org.apache.commons.codec.digest.MurmurHash3;
 public class BytesWrapper implements Comparable<BytesWrapper>, Serializable {
     /** An empty byte array for convenience */
     public static final byte[] EMPTY_BYTES = new byte[0];
+    public static final BytesWrapper EMPTY = new BytesWrapper(EMPTY_BYTES);
 
     /** The contents of the BytesRef. Should never be {@code null}. */
     private byte[] bytes;
@@ -102,5 +103,75 @@ public class BytesWrapper implements Comparable<BytesWrapper>, Serializable {
         final byte[] copy = new byte[bytes.length];
         System.arraycopy(bytes, 0, copy, 0, bytes.length);
         return new BytesWrapper(copy);
+    }
+
+    /**
+     * Check the common prefix with another {@link BytesWrapper} object and returns it
+     * @return {@link BytesWrapper} which is common prefix for this and input {@link BytesWrapper} object
+     */
+    public BytesWrapper commonPrefix(BytesWrapper other) {
+        int i = 0;
+        while (i < this.bytes.length && i < other.bytes.length && this.bytes[i] == other.bytes[i]) {
+            i++;
+        }
+        if (i == 0) {
+            return EMPTY;
+        }
+        return new BytesWrapper(Arrays.copyOfRange(this.bytes, 0, i));
+    }
+
+    /**
+     * Returns a new {@link BytesWrapper} object which is suffix of this object
+     * @param offset offset from which suffix should be returned
+     * @return {@link BytesWrapper} which is suffix of this object
+     */
+    public BytesWrapper suffix(int offset) {
+        if (offset == 0) {
+            return this;
+        }
+        if (offset >= this.bytes.length) {
+            return EMPTY;
+        }
+        return new BytesWrapper(Arrays.copyOfRange(this.bytes, offset, this.bytes.length));
+    }
+
+    /**
+     * Returns a new {@link BytesWrapper} object by appending input bytes to this object
+     * @param other {@link BytesWrapper} object to be appended to this object
+     * @return {@link BytesWrapper} which is combination of this and input {@link BytesWrapper} object
+     */
+    public BytesWrapper append(BytesWrapper other) {
+        if (other.bytes.length == 0) {
+            return this;
+        }
+        if (this.bytes.length == 0) {
+            return other;
+        }
+        byte[] newBytes = new byte[this.bytes.length + other.bytes.length];
+        System.arraycopy(this.bytes, 0, newBytes, 0, this.bytes.length);
+        System.arraycopy(other.bytes, 0, newBytes, this.bytes.length, other.bytes.length);
+        return new BytesWrapper(newBytes);
+    }
+
+    /**
+     * Returns a new {@link BytesWrapper} object by appending this object's to other object bytes
+     * @param other {@link BytesWrapper} object to be appended to this object
+     * @return {@link BytesWrapper} which is combination input {@link BytesWrapper} object and this object
+     */
+    public BytesWrapper addPrefix(BytesWrapper other) {
+        if (other.bytes.length == 0) {
+            return this;
+        }
+        if (this.bytes.length == 0) {
+            return other;
+        }
+        byte[] newBytes = new byte[this.bytes.length + other.bytes.length];
+        System.arraycopy(other.bytes, 0, newBytes, 0, other.bytes.length);
+        System.arraycopy(this.bytes, 0, newBytes, other.bytes.length, this.bytes.length);
+        return new BytesWrapper(newBytes);
+    }
+
+    public long hash() {
+        return Arrays.hashCode(this.bytes);
     }
 }
