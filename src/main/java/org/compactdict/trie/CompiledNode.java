@@ -23,7 +23,7 @@ class CompiledNode implements Serializable, Comparable<CompiledNode> {
     int bufferOffset;
     int value = -1;
     transient TreeMap<Byte, CompiledNode> childrenMap;
-    private CompiledNode[] children;
+    CompiledNode[] children;
 
     /**
      * Constructs an empty node with no input byte or value.

@@ -21,6 +21,8 @@ import java.util.Stack;
  * A memory-optimized trie-based implementation of the Dictionary interface
  * that stores key-value pairs using BytesRef objects. This implementation
  * combines a trie structure with value dereferencing to reduce memory usage.
+ * Further it serializes the Trie into a byte array with optimal bytes usage
+ * for representing nodes and edges.
  *
  * <p>The class uses two main data structures:
  * <ul>
@@ -78,6 +80,9 @@ public class CompiledTrieDict implements CompiledDictionary, Serializable {
      * new value is added to the value table. This ensures that duplicate
      * values are stored only once in memory.</p>
      *
+     * It first write the value in dictionary serialized into bytes array and
+     * then puts it in Map.
+     *
      * @param key   the BytesRef key to store
      * @param value the BytesRef value to be associated with the key
      * @param isPrefixKey A boolean indicating whether the key is a prefix key or not.
@@ -88,7 +93,6 @@ public class CompiledTrieDict implements CompiledDictionary, Serializable {
         if (serializedDict != null) {
             throw new IllegalStateException("Cannot put values after dictionary is compiled");
         }
-//        System.out.println("Input key: " + Arrays.toString(key.getBytes()));
 
         if (!valueOffsetTable.containsKey(value)) {
             valueOffsetTable.put(value, serializedValueTable.getPosition());
@@ -195,7 +199,6 @@ public class CompiledTrieDict implements CompiledDictionary, Serializable {
         // Start writing nodes to buffer level by level
         // Write levels in reverse orders so that offset for child node can be calculated,
         // to make it available to serialize parent node
-        int currentNodeWritingOffset = serializedDict.getPosition();
         Stack<Queue<CompiledNode>> perLevelNodes = getLevelOrderedNodes();
 
         // Creating buffer for small repeated operations, to avoid creating new buffer objects again and again
@@ -215,7 +218,6 @@ public class CompiledTrieDict implements CompiledDictionary, Serializable {
     public void save(String fileName) throws IOException {
         FileOutputStream fileOutputStream
                 = new FileOutputStream(fileName);
-        System.out.println("Writing buffer size " + serializedDict.getBuffer().length);
         fileOutputStream.write(serializedDict.getBuffer());
         fileOutputStream.close();
     }
@@ -224,7 +226,6 @@ public class CompiledTrieDict implements CompiledDictionary, Serializable {
         FileInputStream fileInputStream
                 = new FileInputStream(fileName);
         serializedDict = new ByteBuffer(fileInputStream.readAllBytes());
-        System.out.println("Loaded dictionary from file " + serializedDict.getBuffer().length);
         root.childrenMap = null;
     }
 
@@ -270,10 +271,6 @@ public class CompiledTrieDict implements CompiledDictionary, Serializable {
         }
 
         node.childrenMap = null;
-//        compiledCount++;
-//        if (compiledCount%1000 == 0) {
-//            System.out.println("Compiled " + compiledCount + " nodes");
-//        }
     }
 
     private Stack<Queue<CompiledNode>> getLevelOrderedNodes() {
